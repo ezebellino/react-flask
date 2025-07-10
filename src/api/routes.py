@@ -54,6 +54,16 @@ def login():
     token = create_access_token(identity=str(user.id))
     return jsonify({"token": token}), 200
 
+# User Logout
+@api.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    """
+    Logout endpoint. Client should discard the token on logout.
+    For full token invalidation, implement a token revocation blocklist.
+    """
+    return jsonify({"msg": "Logout successful"}), 200
+
 # Tasks CRUD
 @api.route('/tasks', methods=['GET', 'POST'])
 @jwt_required()

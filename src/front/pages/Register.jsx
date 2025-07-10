@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 const Register = () => {
     const [form, setForm] = useState({
-        // username: "",
+        username: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -29,7 +29,7 @@ const Register = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    // username: form.username,
+                    username: form.username,
                     email: form.email,
                     password: form.password,
                 }),
@@ -39,7 +39,11 @@ const Register = () => {
                 setError(data.msg || data.message || "Error al registrar.");
             } else {
                 setSuccess("Registro exitoso. Ahora puedes iniciar sesión.");
-                setForm({ email: "", password: "", confirmPassword: "" });
+
+                setForm({ username: "", email: "", password: "", confirmPassword: "" });
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 2000);
             }
         } catch {
             setError("Error de red.");
@@ -55,7 +59,7 @@ const Register = () => {
                 {error && <div className="alert alert-danger">{error}</div>}
                 {success && <div className="alert alert-success">{success}</div>}
                 <form onSubmit={handleSubmit}>
-                    {/* <div className="mb-3">
+                    <div className="mb-3">
                         <label className="form-label">Usuario</label>
                         <input
                             className="form-control"
@@ -66,7 +70,7 @@ const Register = () => {
                             required
                             autoComplete="username"
                         />
-                    </div> */}
+                    </div>
                     <div className="mb-3">
                         <label className="form-label">Correo electrónico</label>
                         <input

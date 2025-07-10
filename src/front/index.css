@@ -1,0 +1,75 @@
+/* Global Dark Theme */
+body {
+  background-color: #121212;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* Links */
+a, a:visited {
+  color: #BB86FC;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* Navbar and Footer */
+.navbar, .footer {
+  background-color: #1F1B24 !important;
+  border: none;
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #BB86FC;
+  border-color: #BB86FC;
+}
+.btn-secondary {
+  background-color: #03DAC6;
+  border-color: #03DAC6;
+}
+.btn-danger {
+  background-color: #CF6679;
+  border-color: #CF6679;
+}
+
+/* Home Page Styles */
+.page-home {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 56px - 56px); /* Ajusta si nav y footer cambian */
+  flex-direction: column;
+  text-align: center;
+  gap: 1rem;
+}
+
+.page-home h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+
+.page-home p {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.page-home .btn {
+  min-width: 120px;
+}
+
+/* Loading Spinner */
+.loading {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 1.2rem;
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #BB86FC !important;
+}

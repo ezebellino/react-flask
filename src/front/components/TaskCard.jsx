@@ -16,7 +16,7 @@ const TaskCard = ({ task, onToggleComplete, onDelete, onEdit }) => {
                 <div className="d-flex align-items-center">
                     <input
                         type="checkbox"
-                        className="form-check-input me-2"
+                        className="form-check-input me-2 border-black"
                         checked={task.completed}
                         onChange={() => onToggleComplete(task.id)}
                     />

@@ -4,17 +4,19 @@ import {
   createBrowserRouter,
   createRoutesFromElements,
   Route,
+  Navigate
 } from "react-router-dom";
+
 import { Layout } from "./pages/Layout";
 import Home from "./pages/Home";
-import { Single } from "./pages/Single";
-import { Demo } from "./pages/Demo";
-// Import the components for the routes.
+
 import Login from "./pages/Login";
 import Logout from "./pages/Logout";
 import Register from "./pages/Register";
 import TasksPage from "./pages/Tasks";
-import { Navigate } from "react-router-dom";
+
+import RequireAuth from "./components/RequireAuth";
+import RequireNoAuth from "./components/RequireNoAuth";
 
 export const router = createBrowserRouter(
 
@@ -30,17 +32,16 @@ export const router = createBrowserRouter(
 
       {/* Nested Routes: Defines sub-routes within the BaseHome component. */}
       <Route path="/" element={<Home />} />
-      <Route path="/single/:theId" element={<Single />} />  {/* Dynamic route for single items */}
-      <Route path="/demo" element={<Demo />} />
-      <Route path="/login" element={<Login />} />
       <Route path="/logout" element={<Logout />} />
-      <Route path="/register" element={<Register />} />
-      <Route
-        path="/tasks"
-        element={localStorage.getItem("token")
-          ? <TasksPage />
-          : <Navigate to="/login" replace />}
-      />
+      <Route element={<RequireNoAuth />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
+      <Route element={<RequireAuth />}>
+        <Route path="tasks" element={<TasksPage />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Route>
   )
 );

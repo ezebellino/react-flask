@@ -21,7 +21,7 @@ CORS(api)
 @api.route('/hello', methods=['GET', 'POST'])
 def handle_hello():
     response_body = {
-        "message": "Hello! I'm a message that came from the backend, check the network tab on the inspector and you will see the GET request"
+        "message": "¡Hola! Soy un mensaje que vino del backend, verifica la pestaña de red en el inspector y verás la solicitud GET"
     }
     return jsonify(response_body), 200
 
@@ -32,9 +32,9 @@ def register():
     email = data.get('email')
     pwd = data.get('password')
     if not email or not pwd:
-        return jsonify({"msg": "Email and password are required"}), 400
+        return jsonify({"msg": "Email y contraseña son requeridos"}), 400
     if User.query.filter_by(email=email).first():
-        return jsonify({"msg": "User already exists"}), 409
+        return jsonify({"msg": "El usuario ya existe"}), 409
     hashed = generate_password_hash(pwd)
     user = User(email=email, password=hashed, is_active=True)
     db.session.add(user)
@@ -49,10 +49,17 @@ def login():
     pwd = data.get('password')
     user = User.query.filter_by(email=email).first()
     if not user or not check_password_hash(user.password, pwd):
-        return jsonify({"msg": "Invalid credentials"}), 401
+        return jsonify({"msg": "Credenciales Inválidas"}), 401
     # Ensure identity is a string to satisfy JWT spec
     token = create_access_token(identity=str(user.id))
-    return jsonify({"token": token}), 200
+        # Serializar el usuario (id, email, username)
+    user_data = user.serialize()
+
+    # Devolver ambos en la respuesta
+    return jsonify({
+        "token": token,
+        "user": user_data
+    }), 200
 
 # User Logout
 @api.route('/logout', methods=['POST'])
@@ -62,7 +69,7 @@ def logout():
     Logout endpoint. Client should discard the token on logout.
     For full token invalidation, implement a token revocation blocklist.
     """
-    return jsonify({"msg": "Logout successful"}), 200
+    return jsonify({"msg": "Cerró sesión satisfactoriamente"}), 200
 
 # Tasks CRUD
 @api.route('/tasks', methods=['GET', 'POST'])
@@ -77,7 +84,7 @@ def handle_tasks():
     data = request.get_json() or {}
     label = data.get('label')
     if not label:
-        return jsonify({"msg": "Field 'label' is required"}), 400
+        return jsonify({"msg": "Campo 'label' es requerido"}), 400
     task = Task(label=label, user_id=user_id)
     db.session.add(task)
     db.session.commit()
@@ -90,7 +97,7 @@ def modify_task(task_id):
     user_id = int(get_jwt_identity())
     task = Task.query.filter_by(id=task_id, user_id=user_id).first()
     if not task:
-        return jsonify({"msg": "Task not found"}), 404
+        return jsonify({"msg": "Tarea no encontrada"}), 404
     if request.method == 'PUT':
         data = request.get_json() or {}
         task.label = data.get('label', task.label)
@@ -100,4 +107,4 @@ def modify_task(task_id):
     # DELETE
     db.session.delete(task)
     db.session.commit()
-    return jsonify({"msg": "Task deleted"}), 200
+    return jsonify({"msg": "Tarea eliminada"}), 200

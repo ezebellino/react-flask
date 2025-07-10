@@ -9,6 +9,7 @@ const TasksPage = () => {
     const [newLabel, setNewLabel] = useState('');
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
+    const userData = JSON.parse(localStorage.getItem('user') || '{}');
 
     // 1) Cargar tareas al montar
     useEffect(() => {
@@ -124,29 +125,35 @@ const TasksPage = () => {
 
     return (
         <div className="container mt-4">
-            {store.loading && <div>Loading...</div>}
-            {store.error && <div className="alert alert-danger">{store.error}</div>}
-            <form onSubmit={handleCreate} className="d-flex mb-3">
-                <input
-                    className="form-control me-2"
-                    placeholder="Nueva tarea..."
-                    value={newLabel}
-                    onChange={e => {
-                        setNewLabel(e.target.value);
-                        dispatch({ type: 'CLEAR_ERROR' });
-                    }}
-                />
-                <button className="btn btn-success" type="submit">Agregar</button>
-            </form>
-            {store.todos.map(todo => (
-                <TaskCard
-                    key={todo.id}
-                    task={todo}
-                    onToggleComplete={() => handleToggle(todo.id, !todo.completed)}
-                    onDelete={() => handleDelete(todo.id)}
-                    onEdit={() => handleEdit(todo.id)}
-                />
-            ))}
+            {/* Bienvenida al usuario */}
+            <div className="mb-4 text-center text-light p-3 rounded">
+                <h2>Bienvenido, {userData.username || 'Usuario'}</h2>
+                <p>Administra tus tareas de manera sencilla y eficiente.</p>
+                <h1 className="mb-4">Mis Tareas</h1>
+                {store.loading && <div>Loading...</div>}
+                {store.error && <div className="alert alert-danger">{store.error}</div>}
+                <form onSubmit={handleCreate} className="d-flex mb-3">
+                    <input
+                        className="form-control me-2"
+                        placeholder="Nueva tarea..."
+                        value={newLabel}
+                        onChange={e => {
+                            setNewLabel(e.target.value);
+                            dispatch({ type: 'CLEAR_ERROR' });
+                        }}
+                    />
+                    <button className="btn btn-success" type="submit">Agregar</button>
+                </form>
+                {store.todos.map(todo => (
+                    <TaskCard
+                        key={todo.id}
+                        task={todo}
+                        onToggleComplete={() => handleToggle(todo.id, !todo.completed)}
+                        onDelete={() => handleDelete(todo.id)}
+                        onEdit={() => handleEdit(todo.id)}
+                    />
+                ))}
+            </div>
         </div>
     );
 };

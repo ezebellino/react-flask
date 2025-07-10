@@ -20,7 +20,7 @@ const Navbar = () => {
 		<nav className="navbar navbar-dark bg-dark">
 			<div className="container">
 				<Link to="/" className="navbar-brand">
-					ToDoList by Ezebellino
+					Home
 				</Link>
 				<div className="d-flex gap-2">
 					{isLoggedIn ? (

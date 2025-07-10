@@ -29,14 +29,23 @@ def handle_hello():
 @api.route('/register', methods=['POST'])
 def register():
     data = request.get_json() or {}
-    email = data.get('email')
+    username = data.get('username')
+    email = data.get('email').strip().lower()
     pwd = data.get('password')
-    if not email or not pwd:
-        return jsonify({"msg": "Email y contraseña son requeridos"}), 400
-    if User.query.filter_by(email=email).first():
+    
+    if not username or not email or not pwd:
+        return jsonify({"msg": "Email, usuario y contraseña son requeridos"}), 400
+    
+    if User.query.filter((User.email==email) | (User.username==username)).first():
         return jsonify({"msg": "El usuario ya existe"}), 409
+    
     hashed = generate_password_hash(pwd)
-    user = User(email=email, password=hashed, is_active=True)
+    user = User(
+        username=username,
+        email=email,
+        password=hashed,
+        is_active=True
+    )
     db.session.add(user)
     db.session.commit()
     return jsonify(user.serialize()), 201
@@ -45,7 +54,7 @@ def register():
 @api.route('/login', methods=['POST'])
 def login():
     data = request.get_json() or {}
-    email = data.get('email')
+    email = data.get('email').strip().lower()
     pwd = data.get('password')
     user = User.query.filter_by(email=email).first()
     if not user or not check_password_hash(user.password, pwd):

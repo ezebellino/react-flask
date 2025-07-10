@@ -7,6 +7,8 @@ import TaskCard from '../components/TaskCard';
 const TasksPage = () => {
     const [store, dispatch] = useReducer(storeReducer, undefined, initialStore);
     const [newLabel, setNewLabel] = useState('');
+    const [editingId, setEditingId] = useState(null);
+    const [editingText, setEditingText] = useState('');
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const userData = JSON.parse(localStorage.getItem('user') || '{}');
@@ -100,8 +102,9 @@ const TasksPage = () => {
 
     // Editar tarea
     const handleEdit = (id) => {
-        const newText = prompt('Ingresa el nuevo texto para la tarea:', store.todos.find(t => t.id === id)?.label);
-        if (!newText) return;
+        const task = store.todos.find(t => t.id === id);
+        setEditingId(id);
+        setEditingText(task.label);
         dispatch({ type: 'SET_LOADING', payload: true });
         fetch(`/api/tasks/${id}`, {
             method: 'PUT',
@@ -109,7 +112,7 @@ const TasksPage = () => {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ label: newText })
+            body: JSON.stringify({ label: task.label })
         })
             .then(async res => {
                 if (!res.ok) {
@@ -121,6 +124,40 @@ const TasksPage = () => {
             .then(updated => dispatch({ type: 'UPDATE_TODO', payload: updated }))
             .catch(err => dispatch({ type: 'SET_ERROR', payload: err.message }));
     };
+
+    // Guardar cambios
+    const handleEditSave = (id) => {
+        if (!editingText.trim()) return;
+        dispatch({ type: 'SET_LOADING', payload: true });
+        fetch(`/api/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ label: editingText })
+        })
+            .then(async res => {
+                if (!res.ok) {
+                    const err = await res.json();
+                    throw new Error(err.msg || 'Error al editar tarea');
+                }
+                return res.json();
+            })
+            .then(updated => {
+                dispatch({ type: 'UPDATE_TODO', payload: updated });
+                setEditingId(null);
+                setEditingText("");
+            })
+            .catch(err => dispatch({ type: 'SET_ERROR', payload: err.message }));
+    };
+
+    // Cancelar edición
+    const handleEditCancel = () => {
+        setEditingId(null);
+        setEditingText("");
+    };
+
 
 
     return (
@@ -145,13 +182,34 @@ const TasksPage = () => {
                     <button className="btn btn-success" type="submit">Agregar</button>
                 </form>
                 {store.todos.map(todo => (
-                    <TaskCard
-                        key={todo.id}
-                        task={todo}
-                        onToggleComplete={() => handleToggle(todo.id, !todo.completed)}
-                        onDelete={() => handleDelete(todo.id)}
-                        onEdit={() => handleEdit(todo.id)}
-                    />
+                    <div key={todo.id}>
+                        {editingId === todo.id ? (
+                            // MODO EDICIÓN
+                            <div className="card mb-2 bg-dark text-light p-3">
+                                <div className="d-flex gap-2">
+                                    <input
+                                        className="form-control bg-secondary text-light"
+                                        value={editingText}
+                                        onChange={e => setEditingText(e.target.value)}
+                                    />
+                                    <button className="btn btn-success" onClick={() => handleEditSave(todo.id)}>
+                                        Guardar
+                                    </button>
+                                    <button className="btn btn-secondary" onClick={handleEditCancel}>
+                                        Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            // MODO LECTURA NORMAL
+                            <TaskCard
+                                task={todo}
+                                onToggleComplete={() => handleToggle(todo.id, !todo.completed)}
+                                onDelete={() => handleDelete(todo.id)}
+                                onEdit={() => handleEdit(todo.id)}
+                            />
+                        )}
+                    </div>
                 ))}
             </div>
         </div>

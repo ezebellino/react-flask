@@ -12,9 +12,14 @@ const Register = () => {
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setForm({
+            ...form,
+            [name]: name === "email"
+                ? value.toLowerCase()
+                : value
+        });
         setError("");
-        setSuccess("");
     };
 
     const handleSubmit = async (e) => {

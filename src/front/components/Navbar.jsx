@@ -24,9 +24,16 @@ const Navbar = () => {
 				</Link>
 				<div className="d-flex gap-2">
 					{isLoggedIn ? (
-						<button className="btn btn-danger" onClick={handleLogout}>
-							Logout
-						</button>
+						<>
+							<Link to="/tasks">
+								<button className="btn btn-info">Tasks</button>
+							</Link>
+							<Link to="/logout">
+								<button className="btn btn-danger" onClick={handleLogout}>
+									Logout
+								</button>
+							</Link>
+						</>
 					) : (
 						<>
 							<Link to="/login">
